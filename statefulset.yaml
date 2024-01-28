@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sample-service
+  labels:
+    app: sample
+spec:
+  ports:
+  - port: 3000
+    name: sample-state
+  clusterIP: None
+  selector:
+    app: sample
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: sample-state
+spec:
+  selector:
+    matchLabels:
+      app: sample 
+  serviceName: "sample-app1"
+  replicas: 3 # by default is 1
+  minReadySeconds: 10 # by default is 0
+  template:
+    metadata:
+      labels:
+        app: sample # has to match .spec.selector.matchLabels
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: sample-state
+        image: tejaskawde/sampelapp:0.7
+        ports:
+        - containerPort: 3000
+          name: sample-con-state
+        volumeMounts:
+        - name: samplevol
+          mountPath: /home/Tejax
+  volumeClaimTemplates:
+  - metadata:
+      name: www
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "my-storage-class"
+      resources:
+        requests:
+          storage: 1Gi
