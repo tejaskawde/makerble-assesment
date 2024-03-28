@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: demo-statefulset  # Replace with a descriptive name
+spec:
+  replicas: 1  # Number of Pods in the StatefulSet (adjust as needed)
+  selector:
+    matchLabels:
+      app: demo-db  # Replace with your application label
+  template:
+    metadata:
+      labels:
+        app: demo-db  # Match the selector label
+    spec:
+      containers:
+      - name: psql-container  # Replace with your container name
+        image: postgres:latest  # Replace with your image
+        ports:
+        - containerPort: 5432  # Adjust port if needed
+        env:
+        - name: POSTGRES_USER  
+          valueFrom:
+            secretKeyRef:
+              name: demo-sec
+              key: POSTGRES_USER
+
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: demo-sec
+              key:  POSTGRES_PASSWORD
+
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: demo-sec
+              key: POSTGRES_DB       
+
+              # Reference your Secret
+        volumeMounts:
+        - name: persistent-storage
+          mountPath: /anithing  # Adjust mount path if needed
+      volumes:
+      - name: persistent-storage
+        persistentVolumeClaim:
+          claimName: demo-pvc  # Reference your PVC
+

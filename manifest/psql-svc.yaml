@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-svc  # Consider a more descriptive name (optional)
+spec:
+  selector:
+    app: demo-db  # Assuming this matches your StatefulSet labels
+  ports:
+  - port: 5432
+    targetPort: 5432
+
